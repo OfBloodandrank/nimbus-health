@@ -50,3 +50,7 @@ nimbus-health/
 - Add more advanced validation
 - Create a graphical user interface
 - Add authentication and user roles
+
+## Version
+
+Current version: 1.0
