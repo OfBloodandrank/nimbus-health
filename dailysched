@@ -1,0 +1,23 @@
+Block 1: 
+
+The Input Engine (60 Minutes)What to do: Open freeCodeCamp and complete interactive coding lessons.The Rule: Do not take heavy notes. Just focus on understanding the immediate mechanism of the code syntax being shown (e.g., how a try/except block functions under the hood). 
+
+Block 2: Isolated Muscle Memory (60 Minutes)What to do: Go to Exercism's Python Track and solve 1 or 2 small coding challenges matching what you learned in Block 1.Why this matters: Exercism forces you to run automated unit tests locally. This conditions your mind to read error messages and write clean, compliant code without depending on a tutorial video. 
+
+Block 3: The Nimbus Health Forge (90 Minutes)What to do: Turn off all tutorials. Open your Nimbus Health codebase and build exactly one small feature or fix one specific bug.How to link it: If freeCodeCamp taught you about dictionary keys in Block 1, spend this block changing your patient record lookups to use that exact syntax. If you break your code, use the skills from Block 2 to read the terminal error and fix it. 
+
+Block 4: Professional Wrap-up (30 Minutes)What to do: Review the code you wrote for Nimbus Health. Write down comments explaining why you wrote a complex line, stage your changes, and push a clean commit message to GitHub. 
+
+Your Block 3 & 4 Workflow (Every Day) 
+
+Now that your folder is linked to GitHub, your daily routine for Block 3 (Coding) and Block 4 (Review/Git) will look exactly like this: 
+
+[Write Code in Block 3] ──> [git add .] ──> [git commit -m "..."] ──> [git push origin main] 
+
+Block 3 (90 mins): Open your project folder in your code editor (like VS Code). Write your new Python features or bug fixes. 
+
+Block 4 (30 mins): Open your terminal inside that project folder and run these three commands to save and upload your progress: git add . git commit -m "feat: add input validation for patient age" git push origin main 
+
+# Managing Your Energy 
+
+Having 24/7 freedom means you will occasionally feel tempted to pull 10-hour coding marathons. Avoid this trap. Consistency over next 10–12 months matters significantly more than single intense days. If your health condition leaves you feeling fatigued on a specific day, scale back the blocks to 15 minutes each, but do not skip the sequence. The daily habit of moving from theory straight into Nimbus Health is what builds true engineering instincts.Create your freeCodeCamp account and finish your first 3 lessons.Set up a clean folder on your desktop named nimbus-health-project to isolate your work.
