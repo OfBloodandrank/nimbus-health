@@ -1,27 +1,12 @@
-#patient dictionaries 
-patients = [
-    {
-        "id": 12345,
-        "name": "Jane Doe",
-        "age": 22,
-        "doctor": "Dr. Robinavitch",
-        "active": True
-    },
-    {
-        "id": 67890,
-        "name": "Mary Joe",
-        "age": 55,
-        "doctor": "Dr. Whittaker",
-        "active": True
-    },
-    {
-        "id": 87546,
-        "name": "Christian Duke",
-        "age": 19,
-        "doctor": "Dr. Langdon.",
-        "active": True
-    },
-]
+import json
+
+# Load patients from the JSON file
+def load_patients():
+    with open("patients.json", "r") as file:
+        return json.load(file)
+
+patients = load_patients()
+
 #show patient details function
 def show_patient_details(patient):
     print(f"ID: {patient['id']}")
