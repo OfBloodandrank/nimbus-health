@@ -7,6 +7,13 @@ def load_patients():
 
 patients = load_patients()
 
+# Save patients to the JSON file
+def save_patients():
+    with open("patients.json", "w") as file:
+        json.dump(patients, file, indent=4)
+
+patients = load_patients()
+
 #show patient details function
 def show_patient_details(patient):
     print(f"ID: {patient['id']}")
@@ -50,6 +57,7 @@ def register_patient(name, age, doctor):
         "active": True
     }
     patients.append(new_patient)
+    save_patients()
     print(f"Patient {name} (ID: {new_id}) added successfully!")
 
 #function that updates patient information
@@ -62,6 +70,7 @@ def update_patient(patient_id, name=None, age=None, doctor=None):
 
     if doctor is not None:
         patient['doctor'] = doctor
+    save_patients()
     print(f"Patient {patient_id} updated successfully!")
 
 #function that deactivates a patient
@@ -72,4 +81,5 @@ def deactivate_patient(patient_id):
         return
 
     patient['active'] = False
+    save_patients()
     print(f"Patient {patient_id} deactivated successfully!")
