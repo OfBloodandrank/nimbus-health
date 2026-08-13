@@ -131,6 +131,7 @@ while True:
                         print("Patient is already active.")
                     else:
                         patient["active"] = True
+                        patients.save_patients()
                         print(f"Patient {patient_id} reactivated successfully!")
         
                 elif status_choice == "2":
@@ -138,6 +139,7 @@ while True:
                         print("Patient is already inactive.")
                     else:
                         patient["active"] = False
+                        patients.save_patients()
                         print(f"Patient {patient_id} deactivated successfully!")
 
                 elif status_choice == "3":
