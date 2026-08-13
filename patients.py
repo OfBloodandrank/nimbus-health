@@ -12,8 +12,6 @@ def save_patients():
     with open("patients.json", "w") as file:
         json.dump(patients, file, indent=4)
 
-patients = load_patients()
-
 #show patient details function
 def show_patient_details(patient):
     print(f"ID: {patient['id']}")
