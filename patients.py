@@ -8,6 +8,9 @@ def load_patients():
     except FileNotFoundError:
         print("Patient data file not found.")
         return []
+    except json.JSONDecodeError:
+        print("Patient data file contains invalid JSON.")
+        exit()
 
 patients = load_patients()
 
