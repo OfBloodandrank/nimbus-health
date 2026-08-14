@@ -2,8 +2,12 @@ import json
 
 # Load patients from the JSON file
 def load_patients():
-    with open("patients.json", "r") as file:
-        return json.load(file)
+    try:
+        with open("patients.json", "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print("Patient data file not found.")
+        return []
 
 patients = load_patients()
 
