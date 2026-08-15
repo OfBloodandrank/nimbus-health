@@ -65,7 +65,7 @@ This system is undergoing an active engineering transformation to convert it int
 
 ## Current Development Status
 
-🚧 Nimbus Health is currently undergoing a persistence layer upgrade.
+🚧 Nimbus Health is currently refining its persistence layer and data quality systems.
 
 Completed:
 - Patient management workflows
