@@ -2,6 +2,7 @@ import json
 
 from storage import load_patients, save_patients
 
+patients = load_patients()
 #function that validates patient data types
 def validate_patient(patient):
 

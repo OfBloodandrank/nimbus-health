@@ -14,10 +14,7 @@ def load_patients():
         print("Patient data file contains invalid JSON.")
         exit()
 
-patients = load_patients()
-
-
 # Save patients to the JSON file
-def save_patients():
+def save_patients(patients):
     with open("patients.json", "w") as file:
         json.dump(patients, file, indent=4)
