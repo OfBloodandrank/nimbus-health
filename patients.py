@@ -1,10 +1,41 @@
 import json
 
+#function that validates patient data types
+def validate_patient(patient):
+
+    if not isinstance(patient["id"], int):
+        print("Patient ID must be an integer.")
+        return False
+    
+    if not isinstance(patient["name"], str):
+        print("Patient name must be a string.")
+        return False
+    
+    if not isinstance(patient["age"], int):
+        print("Patient age must be an integer.")
+        return False
+
+    if not isinstance(patient["doctor"], str):
+        print("Doctor name must be a string.")
+        return False
+
+    if not isinstance(patient["active"], bool):
+        print("Patient status must be a boolean.")
+        return False
+    
+    return True
+
 # Load patients from the JSON file
 def load_patients():
     try:
         with open("patients.json", "r") as file:
-            return json.load(file)
+            patients = json.load(file)
+
+            for current_patient in patients:
+                if not validate_patient(current_patient):
+                     exit()
+            return patients
+                 
     except FileNotFoundError:
         print("Patient data file not found.")
         return []
@@ -13,6 +44,7 @@ def load_patients():
         exit()
 
 patients = load_patients()
+
 
 # Save patients to the JSON file
 def save_patients():
