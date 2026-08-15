@@ -73,7 +73,11 @@ Completed:
 - Modular Python architecture
 - Git/GitHub workflow
 - JSON-based patient data loading
-
-In Progress:
 - JSON data persistence
 - Automated saving of patient records
+- Automated testing with pytest
+
+In Progress:
+Phase 2 polish:
+- Expand automated test coverage
+- Add documentation for new validation functions
