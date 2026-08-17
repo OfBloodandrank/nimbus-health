@@ -82,9 +82,5 @@ Data persistence:
 Development workflow:
 - Git/GitHub workflow
 - Automated testing with pytest
-
-In Progress:
-
-Phase 2 polish:
-- Expand automated test coverage
-- Add documentation for core functions
+- Expanded automated test coverage
+- Documentation for core functions
