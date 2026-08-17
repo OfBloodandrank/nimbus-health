@@ -3,8 +3,9 @@ import json
 from storage import load_patients, save_patients
 
 patients = load_patients()
-#function that validates patient data types
+
 def validate_patient(patient):
+    """Validate a patient record."""
 
     if not isinstance(patient["id"], int):
         print("Patient ID must be an integer.")
@@ -28,8 +29,8 @@ def validate_patient(patient):
     
     return True
 
-#show patient details function
 def show_patient_details(patient):
+    """Display the details of a patient."""
     print(f"ID: {patient['id']}")
     print(f"Name: {patient['name']}")
     print(f"Age: {patient['age']}")
@@ -38,7 +39,7 @@ def show_patient_details(patient):
 
 #function that shows all patients
 def show_patients():
-
+    """Display the total number of patients and active patients."""    
     total_patients = len(patients)
     active_patients = sum(patient["active"] for patient in patients)
     print (f"Total Patient Records: {total_patients}") 
@@ -49,18 +50,15 @@ def show_patients():
         if current_patient['active']:
             show_patient_details(current_patient)
 
-
-#function that finds a patient by ID
-
 def find_patient(patient_id):
+    """Finds patient by ID."""
     for current_patient in patients:
         if current_patient['id'] == patient_id:
             return current_patient
     return None
 
-#function that registers a new patient
-
 def register_patient(name, age, doctor):
+    """Registers a new patient."""
     biggest_id = max(patient['id'] for patient in patients)
     new_id = biggest_id + 1
     new_patient = {
@@ -74,8 +72,8 @@ def register_patient(name, age, doctor):
     save_patients()
     print(f"Patient {name} (ID: {new_id}) added successfully!")
 
-#function that updates patient information
 def update_patient(patient_id, name=None, age=None, doctor=None):
+    """Updates patient information."""
     patient = find_patient(patient_id)
     if name is not None:
         patient['name'] = name
@@ -87,8 +85,8 @@ def update_patient(patient_id, name=None, age=None, doctor=None):
     save_patients()
     print(f"Patient {patient_id} updated successfully!")
 
-#function that deactivates a patient
 def deactivate_patient(patient_id):
+    """Deactivates a patient."""
     patient = find_patient(patient_id)
     if patient is None:
         print("Patient not found.")

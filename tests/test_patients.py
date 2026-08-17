@@ -1,4 +1,11 @@
+
+import json
+
+import pytest
+
 from patients import validate_patient
+
+from storage import load_patients
 
 
 def test_valid_patient():
@@ -66,3 +73,19 @@ def test_invalid_patient_status():
     }
 
     assert validate_patient(patient) == False
+
+def test_load_patients_missing_file(monkeypatch):
+    def mock_open(*args, **kwargs):
+        raise FileNotFoundError
+    monkeypatch.setattr("builtins.open", mock_open)
+    result = load_patients()
+    assert result == []
+
+def test_load_patients_invalid_json(monkeypatch):
+    def mock_json_load(*args, **kwargs):
+        raise json.JSONDecodeError("Invalid JSON", "", 0)
+    monkeypatch.setattr("json.load", mock_json_load)
+
+    with pytest.raises(SystemExit):
+        load_patients()
+
