@@ -75,8 +75,8 @@ Core application functionality:
 - Modular Python architecture
 
 Data persistence:
-- JSON-based patient data loading
-- JSON data persistence
+- SQLite-based patient data loading
+- SQLite data persistence
 - Automated saving of patient records
 
 Development workflow:

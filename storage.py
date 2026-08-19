@@ -1,21 +1,61 @@
-import json
+import sqlite3
+
+connection = sqlite3.connect("nimbus.db")
+cursor = connection.cursor()
 
 def load_patients():
-    """Load patient records from the JSON file."""
-    try:
-        with open("patients.json", "r") as file:
-            patients = json.load(file)
-            return patients
-                 
-    except FileNotFoundError:
-        print("Patient data file not found.")
-        return []
-    except json.JSONDecodeError:
-        print("Patient data file contains invalid JSON.")
-        exit()
+    """Load patient records from the SQLite database."""
+    cursor.execute("SELECT * FROM patients")
+    rows = cursor.fetchall()
+
+    patients = []
+
+    for row in rows:
+        patients.append({
+            "id": row[0],
+            "name": row[1],
+            "age": row[2],
+            "doctor": row[3],
+            "active": bool(row[4])
+        })
+
+    return patients
 
 
 def save_patients(patients):
-    """Save patient records to the JSON file."""
-    with open("patients.json", "w") as file:
-        json.dump(patients, file, indent=4)
+    """Save patient records to the SQLite database."""
+    for patient in patients:
+        if "id" in patient:
+            cursor.execute(
+                "SELECT id FROM patients WHERE id = ?",
+                (patient["id"],)
+            )
+            existing_patient = cursor.fetchone()
+
+            if existing_patient:
+                cursor.execute("""
+                    UPDATE patients
+                    SET name = ?, age = ?, doctor = ?, active = ?
+                    WHERE id = ?
+                """, (
+                    patient["name"],
+                    patient["age"],
+                    patient["doctor"],
+                    int(patient["active"]),
+                    patient["id"]
+                ))
+
+        else:
+            cursor.execute("""
+                INSERT INTO patients (name, age, doctor, active)
+                VALUES (?, ?, ?, ?)
+            """, (
+                patient["name"],
+                patient["age"],
+                patient["doctor"],
+                int(patient["active"])
+            ))
+
+            patient["id"] = cursor.lastrowid
+
+    connection.commit()

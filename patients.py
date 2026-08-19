@@ -1,4 +1,3 @@
-import json
 
 from storage import load_patients, save_patients
 
@@ -59,18 +58,15 @@ def find_patient(patient_id):
 
 def register_patient(name, age, doctor):
     """Registers a new patient."""
-    biggest_id = max(patient['id'] for patient in patients)
-    new_id = biggest_id + 1
     new_patient = {
-        "id": new_id,
         "name": name,
         "age": age,
         "doctor": doctor,
         "active": True
     }
     patients.append(new_patient)
-    save_patients()
-    print(f"Patient {name} (ID: {new_id}) added successfully!")
+    save_patients(patients)
+    print(f"Patient {name} (ID: {new_patient['id']}) added successfully!")
 
 def update_patient(patient_id, name=None, age=None, doctor=None):
     """Updates patient information."""

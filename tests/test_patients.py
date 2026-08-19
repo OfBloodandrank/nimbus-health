@@ -1,11 +1,9 @@
 
-import json
-
 import pytest
 
 from patients import validate_patient
 
-from storage import load_patients
+import storage
 
 
 def test_valid_patient():
@@ -74,18 +72,51 @@ def test_invalid_patient_status():
 
     assert validate_patient(patient) == False
 
-def test_load_patients_missing_file(monkeypatch):
-    def mock_open(*args, **kwargs):
-        raise FileNotFoundError
-    monkeypatch.setattr("builtins.open", mock_open)
-    result = load_patients()
-    assert result == []
+def test_load_patients(monkeypatch):
+    class FakeCursor:
+        def execute(self, query):
+            pass
 
-def test_load_patients_invalid_json(monkeypatch):
-    def mock_json_load(*args, **kwargs):
-        raise json.JSONDecodeError("Invalid JSON", "", 0)
-    monkeypatch.setattr("json.load", mock_json_load)
+        def fetchall(self):
+            return [
+                (1, "Jane Doe", 22, "Dr. Robinavitch", 1)
+            ]
 
-    with pytest.raises(SystemExit):
-        load_patients()
+    monkeypatch.setattr(storage, "cursor", FakeCursor())
+
+    result = storage.load_patients()
+
+    assert result == [{
+        "id": 1,
+        "name": "Jane Doe",
+        "age": 22,
+        "doctor": "Dr. Robinavitch",
+        "active": True
+    }]
+
+def test_save_new_patient(monkeypatch):
+    class FakeCursor:
+        def __init__(self):
+            self.lastrowid = 1
+
+        def execute(self, query, params=None):
+            if query.startswith("SELECT"):
+                self.result = None
+
+        def fetchone(self):
+            return self.result
+
+    fake_cursor = FakeCursor()
+    monkeypatch.setattr(storage, "cursor", fake_cursor)
+
+    patient = {
+        "name": "Test Patient",
+        "age": 30,
+        "doctor": "Dr. Test",
+        "active": True
+    }
+
+    storage.save_patients([patient])
+
+    assert patient["id"] == 1
 
