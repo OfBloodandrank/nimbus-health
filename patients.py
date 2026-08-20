@@ -1,7 +1,8 @@
 
-from storage import load_patients, save_patients
+from storage import PatientRepository
 
-patients = load_patients()
+patient_repo = PatientRepository()
+patients = patient_repo.load_patients()
 
 def validate_patient(patient):
     """Validate a patient record."""
@@ -65,7 +66,7 @@ def register_patient(name, age, doctor):
         "active": True
     }
     patients.append(new_patient)
-    save_patients(patients)
+    patient_repo.save_patients(patients)
     print(f"Patient {name} (ID: {new_patient['id']}) added successfully!")
 
 def update_patient(patient_id, name=None, age=None, doctor=None):
@@ -78,7 +79,7 @@ def update_patient(patient_id, name=None, age=None, doctor=None):
 
     if doctor is not None:
         patient['doctor'] = doctor
-    save_patients(patients)
+    patient_repo.save_patients(patients)
     print(f"Patient {patient_id} updated successfully!")
 
 def deactivate_patient(patient_id):
@@ -89,5 +90,5 @@ def deactivate_patient(patient_id):
         return
 
     patient['active'] = False
-    save_patients(patients)
+    patient_repo.save_patients(patients)
     print(f"Patient {patient_id} deactivated successfully!")

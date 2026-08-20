@@ -1,10 +1,15 @@
 import sqlite3
 
-connection = sqlite3.connect("nimbus.db")
-cursor = connection.cursor()
+def get_connection():
+    return sqlite3.connect("nimbus.db")
+
 
 def initialize_database():
     """Create database tables if they do not exist."""
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS patients (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -15,63 +20,78 @@ def initialize_database():
         )
     """)
     connection.commit()
+    connection.close()
 
 initialize_database()
 
-
-def load_patients():
-    """Load patient records from the SQLite database."""
-    cursor.execute("SELECT * FROM patients")
-    rows = cursor.fetchall()
-
-    patients = []
-
-    for row in rows:
-        patients.append({
-            "id": row[0],
-            "name": row[1],
-            "age": row[2],
-            "doctor": row[3],
-            "active": bool(row[4])
-        })
-
-    return patients
+class PatientRepository:
+    """Handles patient record database operations."""
 
 
-def save_patients(patients):
-    """Save patient records to the SQLite database."""
-    for patient in patients:
-        if "id" in patient:
-            cursor.execute(
-                "SELECT id FROM patients WHERE id = ?",
-                (patient["id"],)
-            )
-            existing_patient = cursor.fetchone()
+    def load_patients(self):
+        """Load patient records from the SQLite database."""
 
-            if existing_patient:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM patients")
+        rows = cursor.fetchall()
+
+        patients = []
+
+        for row in rows:
+            patients.append({
+                "id": row[0],
+                "name": row[1],
+                "age": row[2],
+                "doctor": row[3],
+                "active": bool(row[4])
+            })
+
+        connection.close()
+
+        return patients
+
+
+    def save_patients(self, patients):
+        """Save patient records to the SQLite database."""
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        for patient in patients:
+            if "id" in patient:
+                cursor.execute(
+                    "SELECT id FROM patients WHERE id = ?",
+                    (patient["id"],)
+                )
+                existing_patient = cursor.fetchone()
+
+                if existing_patient:
+                    cursor.execute("""
+                        UPDATE patients
+                        SET name = ?, age = ?, doctor = ?, active = ?
+                        WHERE id = ?
+                    """, (
+                        patient["name"],
+                        patient["age"],
+                        patient["doctor"],
+                        int(patient["active"]),
+                        patient["id"]
+                    ))
+
+            else:
                 cursor.execute("""
-                    UPDATE patients
-                    SET name = ?, age = ?, doctor = ?, active = ?
-                    WHERE id = ?
+                    INSERT INTO patients (name, age, doctor, active)
+                    VALUES (?, ?, ?, ?)
                 """, (
                     patient["name"],
                     patient["age"],
                     patient["doctor"],
-                    int(patient["active"]),
-                    patient["id"]
+                    int(patient["active"])
                 ))
 
-        else:
-            cursor.execute("""
-                INSERT INTO patients (name, age, doctor, active)
-                VALUES (?, ?, ?, ?)
-            """, (
-                patient["name"],
-                patient["age"],
-                patient["doctor"],
-                int(patient["active"])
-            ))
+                patient["id"] = cursor.lastrowid
 
-            patient["id"] = cursor.lastrowid
-
-    connection.commit()
+        connection.commit()
+        connection.close()
