@@ -78,7 +78,7 @@ def update_patient(patient_id, name=None, age=None, doctor=None):
 
     if doctor is not None:
         patient['doctor'] = doctor
-    save_patients()
+    save_patients(patients)
     print(f"Patient {patient_id} updated successfully!")
 
 def deactivate_patient(patient_id):
@@ -89,5 +89,5 @@ def deactivate_patient(patient_id):
         return
 
     patient['active'] = False
-    save_patients()
+    save_patients(patients)
     print(f"Patient {patient_id} deactivated successfully!")

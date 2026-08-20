@@ -3,6 +3,22 @@ import sqlite3
 connection = sqlite3.connect("nimbus.db")
 cursor = connection.cursor()
 
+def initialize_database():
+    """Create database tables if they do not exist."""
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS patients (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            age INTEGER,
+            doctor TEXT,
+            active INTEGER
+        )
+    """)
+    connection.commit()
+
+initialize_database()
+
+
 def load_patients():
     """Load patient records from the SQLite database."""
     cursor.execute("SELECT * FROM patients")
