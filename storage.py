@@ -52,6 +52,27 @@ class PatientRepository:
 
         return patients
 
+    def add_patient(self, patient): 
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            INSERT INTO patients (name, age, doctor, active)
+            VALUES (?, ?, ?, ?)
+        """, (
+            patient["name"],
+            patient["age"],
+            patient["doctor"],
+            int(patient["active"])
+        ))
+        
+        patient["id"] = cursor.lastrowid
+        
+        connection.commit()
+        connection.close()
+
+
 
     def save_patients(self, patients):
         """Save patient records to the SQLite database."""
@@ -79,19 +100,27 @@ class PatientRepository:
                         int(patient["active"]),
                         patient["id"]
                     ))
-
-            else:
-                cursor.execute("""
-                    INSERT INTO patients (name, age, doctor, active)
-                    VALUES (?, ?, ?, ?)
-                """, (
-                    patient["name"],
-                    patient["age"],
-                    patient["doctor"],
-                    int(patient["active"])
-                ))
-
-                patient["id"] = cursor.lastrowid
-
         connection.commit()
         connection.close()
+        
+
+    def update_patient(self, patient): 
+        """Update an existing patient record in the SQLite database."""
+
+        connection = get_connection()
+        cursor = connection.cursor()
+        cursor.execute("""
+            UPDATE patients
+            SET name = ?, age = ?, doctor = ?, active = ?
+            WHERE id = ?
+        """, (
+            patient["name"],
+            patient["age"],
+            patient["doctor"],
+            int(patient["active"]),
+            patient["id"]
+        ))
+        connection.commit()
+        connection.close()
+
+        

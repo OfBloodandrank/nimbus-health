@@ -66,7 +66,7 @@ def register_patient(name, age, doctor):
         "active": True
     }
     patients.append(new_patient)
-    patient_repo.save_patients(patients)
+    patient_repo.add_patient(new_patient)
     print(f"Patient {name} (ID: {new_patient['id']}) added successfully!")
 
 def update_patient(patient_id, name=None, age=None, doctor=None):
@@ -79,7 +79,7 @@ def update_patient(patient_id, name=None, age=None, doctor=None):
 
     if doctor is not None:
         patient['doctor'] = doctor
-    patient_repo.save_patients(patients)
+    patient_repo.update_patient(patient)
     print(f"Patient {patient_id} updated successfully!")
 
 def deactivate_patient(patient_id):
