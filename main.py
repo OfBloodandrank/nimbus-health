@@ -1,28 +1,47 @@
+from storage import PatientRepository
 import patients
+patient_repo = PatientRepository()
 
 # Main program loop
 while True:
-    print("🏥 NIMBUS HEALTH")
     print("1. View Active Patients")
-    print("2. Register Patient")
-    print("3. Search for a Patient")
-    print("4. Update Patient Record")
-    print("5. Exit Nimbus Health")
+    print("2. View Inactive Patients")
+    print("3. View All Patients")
+    print("4. Register Patient")
+    print("5. Search for a Patient")
+    print("6. Update Patient Record")
+    print("7. Exit Nimbus Health")
 
     # Get user choice
     choice = input("Choose an option: ")
 
     # Exit the program
-    if choice == "5":
+    if choice == "7":
         break
 
-    #choice 1: Show all patients
+    # Choice 1: Show active patients
     if choice == "1":
-        patients.show_patients()
+        patient_list = patient_repo.get_patients("active")
+        counts = patient_repo.get_patient_counts()
+        patients.show_patients(patient_list, counts, "active")
+        
 
-
-    #choice 2: Register a new patient
     elif choice == "2":
+    #Choice 2: Show inactive patients
+        patient_list = patient_repo.get_patients("inactive")
+        counts = patient_repo.get_patient_counts()
+        patients.show_patients(patient_list, counts, "inactive")
+
+    
+    elif choice == "3":
+    #Choice 3: Show all patients
+        patient_list = patient_repo.get_patients("all")
+        counts = patient_repo.get_patient_counts()
+        patients.show_patients(patient_list, counts, "all")
+
+
+    elif choice == "4":
+    #Choice 4: Register a new patient
         # Validate that the name contains only letters and spaces
         while True:
             name = input("Enter patient name: ")
@@ -47,8 +66,8 @@ while True:
         patients.register_patient(name, age, doctor)
 
 
-    #choice 3: Search for a patient by ID
-    elif choice == "3":
+    elif choice == "5":
+    #Choice 5: Search for a patient by ID
         # Validate that the patient ID is a number
         while True:
             try:
@@ -68,10 +87,16 @@ while True:
            print(f"Active: {patient['active']}")
 
 
-    #choice 4: Update a patient record
-    elif choice == "4":
+    elif choice == "6":
+    #Choice 6: Update a patient record
         # Validate that the patient ID is a number
-        patient_id = int(input("Enter patient ID: "))
+        # Validate that the patient ID is a number
+        while True:
+            try:
+                patient_id = int(input("Enter patient ID: "))
+                break
+            except ValueError:
+                print("Please enter a valid patient ID.")
         patient = patients.find_patient(patient_id)
         if patient is None:
             print("Patient not found.")

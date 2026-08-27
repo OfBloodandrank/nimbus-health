@@ -28,30 +28,6 @@ class PatientRepository:
     """Handles patient record database operations."""
 
 
-    def load_patients(self):
-        """Load patient records from the SQLite database."""
-
-        connection = get_connection()
-        cursor = connection.cursor()
-
-        cursor.execute("SELECT * FROM patients")
-        rows = cursor.fetchall()
-
-        patients = []
-
-        for row in rows:
-            patients.append({
-                "id": row[0],
-                "name": row[1],
-                "age": row[2],
-                "doctor": row[3],
-                "active": bool(row[4])
-            })
-
-        connection.close()
-
-        return patients
-
     def add_patient(self, patient): 
 
         connection = get_connection()
@@ -102,7 +78,7 @@ class PatientRepository:
                     ))
         connection.commit()
         connection.close()
-        
+
 
     def update_patient(self, patient): 
         """Update an existing patient record in the SQLite database."""
@@ -123,4 +99,70 @@ class PatientRepository:
         connection.commit()
         connection.close()
 
+    def get_patients(self, status):
+        """Retrieve patients based on status."""
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        if status == "active":
+            cursor.execute(
+                "SELECT * FROM patients WHERE active = ?",
+                (1,)
+            )
+
+        elif status == "inactive":
+            cursor.execute(
+                "SELECT * FROM patients WHERE active = ?",
+                (0,)
+            )
+
+        elif status == "all":
+            cursor.execute(
+                "SELECT * FROM patients"
+            )
+
+        else:
+            raise ValueError("Invalid patient status")
+
+        rows = cursor.fetchall()
         
+
+        patients = []
+
+        for row in rows:
+            patients.append({
+        "id": row[0],
+        "name": row[1],
+        "age": row[2],
+        "doctor": row[3],
+        "active": bool(row[4])
+    })
+
+        connection.close()
+
+        return patients
+
+    def get_patient_counts(self):
+        """Retrieve patient counts by status."""
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            SELECT
+                COUNT(*) AS total,
+                SUM(active) AS active,
+                COUNT(*) - SUM(active) AS inactive
+            FROM patients
+        """)
+        counts = cursor.fetchone()
+        
+        return {
+        "total": counts[0],
+        "active": counts[1],
+        "inactive": counts[2]
+    }
+
+    connection = get_connection()
+    cursor = connection.cursor()     

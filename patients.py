@@ -2,7 +2,7 @@
 from storage import PatientRepository
 
 patient_repo = PatientRepository()
-patients = patient_repo.load_patients()
+patients = patient_repo.get_patients("all")
 
 def validate_patient(patient):
     """Validate a patient record."""
@@ -38,17 +38,17 @@ def show_patient_details(patient):
     print()
 
 #function that shows all patients
-def show_patients():
+def show_patients(patient_list, counts, status):
     """Display the total number of patients and active patients."""    
-    total_patients = len(patients)
-    active_patients = sum(patient["active"] for patient in patients)
-    print (f"Total Patient Records: {total_patients}") 
-    print (f"Active Patients: {active_patients}")
-    print()
+    print(f"Total Patient Records: {counts['total']}")
 
-    for current_patient in patients:
-        if current_patient['active']:
-            show_patient_details(current_patient)
+    if status == "active":
+        print(f"Active Patients: {counts['active']}")
+    elif status == "inactive":
+        print(f"Inactive Patients: {counts['inactive']}")
+
+    for current_patient in patient_list:
+        show_patient_details(current_patient)
 
 def find_patient(patient_id):
     """Finds patient by ID."""
@@ -91,4 +91,5 @@ def deactivate_patient(patient_id):
 
     patient['active'] = False
     patient_repo.save_patients(patients)
-    print(f"Patient {patient_id} deactivated successfully!")
+    print(f"Patient {patient_id} deactivated successfully!"
+)
