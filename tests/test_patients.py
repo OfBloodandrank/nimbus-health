@@ -5,6 +5,12 @@ from patients import validate_patient
 
 import storage
 
+@pytest.fixture
+def repository(tmp_path):
+    db_path = tmp_path / "test.db"
+    storage.initialize_database(str(db_path))
+    return storage.PatientRepository(str(db_path))
+
 
 def test_valid_patient():
     patient = {
@@ -119,11 +125,7 @@ def test_save_new_patient(monkeypatch):
 
     assert patient["id"] == 1
 
-def test_patient_status_change(tmp_path):
-    db_path = tmp_path / "test.db"
-    storage.initialize_database(str(db_path))
-    repository = storage.PatientRepository(str(db_path))
-
+def test_patient_status_change(repository):
     patient = {
         "name": "Test Patient",
         "age": 30,
@@ -144,11 +146,7 @@ def test_patient_status_change(tmp_path):
     assert patient in inactive_patients
     assert patient in all_patients
 
-def test_patient_reactivation(tmp_path):
-    db_path = tmp_path / "test.db"
-    storage.initialize_database(str(db_path))
-    repository = storage.PatientRepository(str(db_path))
-
+def test_patient_reactivation(repository):
     patient = {
         "name": "Test Patient",
         "age": 30,
@@ -168,3 +166,37 @@ def test_patient_reactivation(tmp_path):
     assert patient in active_patients
     assert patient not in inactive_patients
     assert patient in all_patients
+
+def test_update_patient_age(repository):
+    patient = {
+        "name": "Test Patient",
+        "age": 30,
+        "doctor": "Dr. Test",
+        "active": True
+    }
+
+    repository.add_patient(patient)
+    patient["age"] = 40
+    repository.update_patient(patient)
+
+    patients = repository.get_patients("all")
+    updated_patient = patients[0]
+
+    assert updated_patient["id"] == patient["id"]
+    assert updated_patient["name"] == "Test Patient"
+    assert updated_patient["age"] == 40
+    assert updated_patient["doctor"] == "Dr. Test"
+    assert updated_patient["active"] is True
+
+def test_update_nonexistent_patient(repository):
+    patient = {
+        "id": 9999,
+        "name": "Ghost Patient",
+        "age": 50,
+        "doctor": "Dr. Test",
+        "active": True
+    }
+
+    result = repository.update_patient(patient)
+
+    assert result is False

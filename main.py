@@ -169,16 +169,14 @@ while True:
                     if patient["active"]:
                         print("Patient is already active.")
                     else:
-                        patient["active"] = True
-                        patients.patient_repo.save_patients(patients.patients)
+                        patients.update_patient(patient_id, active=True)
                         print(f"Patient {patient_id} reactivated successfully!")
 
                 elif status_choice == "2":
                     if not patient["active"]:
                         print("Patient is already inactive.")
                     else:
-                        patient["active"] = False
-                        patients.patient_repo.save_patients(patients.patients)
+                        patients.update_patient(patient_id, active=False)
                         print(f"Patient {patient_id} deactivated successfully!")
 
                 elif status_choice == "3":

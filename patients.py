@@ -69,18 +69,23 @@ def register_patient(name, age, doctor):
     patient_repo.add_patient(new_patient)
     print(f"Patient {name} (ID: {new_patient['id']}) added successfully!")
 
-def update_patient(patient_id, name=None, age=None, doctor=None):
+def update_patient(patient_id, name=None, age=None, doctor=None, active=None):
     """Updates patient information."""
     patient = find_patient(patient_id)
-    if name is not None:
-        patient['name'] = name
+    if patient is None:
+        return False
     if age is not None:
         patient['age'] = age
 
     if doctor is not None:
         patient['doctor'] = doctor
-    patient_repo.update_patient(patient)
-    print(f"Patient {patient_id} updated successfully!")
+
+    if active is not None:
+        patient['active'] = active
+
+    updated = patient_repo.update_patient(patient)
+
+    return updated
 
 def deactivate_patient(patient_id):
     """Deactivates a patient."""

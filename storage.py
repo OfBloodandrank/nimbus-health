@@ -96,8 +96,13 @@ class PatientRepository:
             int(patient["active"]),
             patient["id"]
         ))
+
+        updated = cursor.rowcount > 0
+
         connection.commit()
         connection.close()
+
+        return updated
 
     def get_patients(self, status):
         """Retrieve patients based on status."""
