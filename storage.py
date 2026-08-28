@@ -1,13 +1,13 @@
 import sqlite3
 
-def get_connection():
-    return sqlite3.connect("nimbus.db")
+def get_connection(db_path="nimbus.db"):
+    return sqlite3.connect(db_path)
 
 
-def initialize_database():
+def initialize_database(db_path="nimbus.db"):
+    connection = get_connection(db_path)
     """Create database tables if they do not exist."""
 
-    connection = get_connection()
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -26,11 +26,11 @@ initialize_database()
 
 class PatientRepository:
     """Handles patient record database operations."""
-
-
+    def __init__(self, db_path="nimbus.db"):self.db_path = db_path
+    
     def add_patient(self, patient): 
 
-        connection = get_connection()
+        connection = get_connection(self.db_path)
         cursor = connection.cursor()
 
         cursor.execute("""
@@ -53,7 +53,7 @@ class PatientRepository:
     def save_patients(self, patients):
         """Save patient records to the SQLite database."""
 
-        connection = get_connection()
+        connection = get_connection(self.db_path)
         cursor = connection.cursor()
 
         for patient in patients:
@@ -83,7 +83,7 @@ class PatientRepository:
     def update_patient(self, patient): 
         """Update an existing patient record in the SQLite database."""
 
-        connection = get_connection()
+        connection = get_connection(self.db_path)
         cursor = connection.cursor()
         cursor.execute("""
             UPDATE patients
@@ -102,7 +102,7 @@ class PatientRepository:
     def get_patients(self, status):
         """Retrieve patients based on status."""
 
-        connection = get_connection()
+        connection = get_connection(self.db_path)
         cursor = connection.cursor()
 
         if status == "active":
