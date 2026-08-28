@@ -67,46 +67,57 @@ while True:
 
 
     elif choice == "5":
-    #Choice 5: Search for a patient by ID
-        # Validate that the patient ID is a number
+    # Choice 5: Search for a patient by ID
+    # Validate that the patient ID is a number
         while True:
             try:
                 patient_id = int(input("Enter patient ID: "))
-                break
             except ValueError:
                 print("Please enter a valid patient ID.")
-        patient = patients.find_patient(patient_id)
-        # Validate that the patient exists
-        if patient is None:
-            print("Patient not found.")
-        else:
-           print("Patient Found:")
-           print("-------------")
-           # Show patient details
-           patients.show_patient_details(patient)
-           print(f"Active: {patient['active']}")
+                continue
 
+            patient = patients.find_patient(patient_id)
+
+            # Validate that the patient exists
+            if patient is None:
+                print("Patient not found.")
+                continue
+
+            break
+
+        print("Patient Found:")
+        print("-------------")
+
+        # Show patient details
+        patients.show_patient_details(patient)
+        print(f"Active: {patient['active']}")
 
     elif choice == "6":
-    #Choice 6: Update a patient record
-        # Validate that the patient ID is a number
+        # Choice 6: Update a patient record
+
         # Validate that the patient ID is a number
         while True:
             try:
                 patient_id = int(input("Enter patient ID: "))
-                break
             except ValueError:
                 print("Please enter a valid patient ID.")
-        patient = patients.find_patient(patient_id)
-        if patient is None:
-            print("Patient not found.")
-        else:
+                continue
+
+            patient = patients.find_patient(patient_id)
+
+            if patient is None:
+                print("Patient not found.")
+                continue
+            break
+
+        # Keep updating this patient
+        while True:
             print("What would you like to update?")
             print("1. Name")
             print("2. Age")
             print("3. Doctor")
             print("4. Patient Status")
-            print("5. Cancel")
+            print("5. Done")
 
             update_choice = input("Choose an option: ")
 
@@ -118,6 +129,7 @@ while True:
                         break
                     else:
                         print("Please enter a valid name.")
+
                 patients.update_patient(patient_id, name=updated_name)
 
             elif update_choice == "2":
@@ -127,19 +139,21 @@ while True:
                         break
                     except ValueError:
                         print("Please enter a valid number.")
+
                 patients.update_patient(patient_id, age=updated_age)
 
             elif update_choice == "3":
                 while True:
                     updated_doctor = input("Enter new doctor: ")
+
                     if updated_doctor.replace(" ", "").isalpha():
                         break
                     else:
                         print("Please enter a valid doctor name.")
+
                 patients.update_patient(patient_id, doctor=updated_doctor)
-            
+
             elif update_choice == "4":
-                # Validate that the patient status is either active or inactive
                 if patient["active"]:
                     print("Current status: Active")
                 else:
@@ -149,8 +163,8 @@ while True:
                 print("2. Deactivate Patient")
                 print("3. Cancel")
 
-                # Validate the status choice
                 status_choice = input("Choose an option: ")
+
                 if status_choice == "1":
                     if patient["active"]:
                         print("Patient is already active.")
@@ -158,7 +172,7 @@ while True:
                         patient["active"] = True
                         patients.patient_repo.save_patients(patients.patients)
                         print(f"Patient {patient_id} reactivated successfully!")
-        
+
                 elif status_choice == "2":
                     if not patient["active"]:
                         print("Patient is already inactive.")
@@ -169,13 +183,13 @@ while True:
 
                 elif status_choice == "3":
                     print("Status update cancelled.")
+
                 else:
                     print("Invalid option. Please choose a valid menu option.")
 
-
-            #choice 5: Cancel the update
             elif update_choice == "5":
-                print("Update cancelled.")
-    #if the user enters an invalid option, display an error message
-    else:
-        print("Invalid option. Please choose a valid menu option.")   
+                print("Update complete.")
+                break
+
+            else:
+                print("Invalid option. Please choose a valid menu option.")
