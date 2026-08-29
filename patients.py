@@ -96,5 +96,5 @@ def deactivate_patient(patient_id):
 
     patient['active'] = False
     patient_repo.save_patients(patients)
-    print(f"Patient {patient_id} deactivated successfully!"
+    print(f"Patient {patient_id} deactivated successfully!"     
 )

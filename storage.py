@@ -19,6 +19,18 @@ def initialize_database(db_path="nimbus.db"):
             active INTEGER
         )
     """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS patient_activity (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            patient_id INTEGER,
+            action TEXT,
+            timestamp TEXT,
+            old_value TEXT,
+            new_value TEXT
+        )
+    """)
+
     connection.commit()
     connection.close()
 
@@ -44,6 +56,17 @@ class PatientRepository:
         ))
         
         patient["id"] = cursor.lastrowid
+
+        cursor.execute("""
+            INSERT INTO patient_activity
+            (patient_id, action, timestamp, old_value, new_value)
+            VALUES (?, ?, datetime('now'), ?, ?)
+        """, (
+            patient["id"],
+            "Patient registered",
+            None,
+            None
+        ))
         
         connection.commit()
         connection.close()
@@ -80,11 +103,35 @@ class PatientRepository:
         connection.close()
 
 
-    def update_patient(self, patient): 
+
+    def update_patient(self, patient):
         """Update an existing patient record in the SQLite database."""
 
         connection = get_connection(self.db_path)
         cursor = connection.cursor()
+
+        cursor.execute(
+            "SELECT name, age, doctor, active FROM patients WHERE id = ?",
+            (patient["id"],)
+        )
+        old_patient = cursor.fetchone()
+
+        if old_patient is None:
+            connection.close()
+            return False
+
+        if old_patient[0] != patient["name"]:
+            cursor.execute("""
+                INSERT INTO patient_activity
+                (patient_id, action, timestamp, old_value, new_value)
+                VALUES (?, ?, datetime('now'), ?, ?)
+            """, (
+                patient["id"],
+                "Name changed",
+                old_patient[0],
+                patient["name"]
+            ))
+
         cursor.execute("""
             UPDATE patients
             SET name = ?, age = ?, doctor = ?, active = ?
@@ -103,6 +150,8 @@ class PatientRepository:
         connection.close()
 
         return updated
+
+
 
     def get_patients(self, status):
         """Retrieve patients based on status."""
@@ -170,4 +219,35 @@ class PatientRepository:
     }
 
     connection = get_connection()
-    cursor = connection.cursor()     
+    cursor = connection.cursor()
+
+
+    def get_patient_activity(self, patient_id):
+        """Retrieve activity history for a patient."""
+
+        connection = get_connection(self.db_path)
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            SELECT id, patient_id, action, timestamp, old_value, new_value
+            FROM patient_activity
+            WHERE patient_id = ?
+            ORDER BY id
+        """, (patient_id,))
+
+        rows = cursor.fetchall()
+        connection.close()
+
+        activity = []
+
+        for row in rows:
+            activity.append({
+                "id": row[0],
+                "patient_id": row[1],
+                "action": row[2],
+                "timestamp": row[3],
+                "old_value": row[4],
+                "new_value": row[5]
+            })
+
+        return activity      

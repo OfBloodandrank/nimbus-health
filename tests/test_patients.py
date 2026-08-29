@@ -200,3 +200,108 @@ def test_update_nonexistent_patient(repository):
     result = repository.update_patient(patient)
 
     assert result is False
+
+def test_update_patient_name(repository):
+    patient = {
+        "name": "Test Patient",
+        "age": 30,
+        "doctor": "Dr. Test",
+        "active": True
+    }
+
+    repository.add_patient(patient)
+
+    patient["name"] = "Updated Patient"
+    repository.update_patient(patient)
+
+    patients = repository.get_patients("all")
+    updated_patient = patients[0]
+
+    assert updated_patient["id"] == patient["id"]
+    assert updated_patient["name"] == "Updated Patient"
+    assert updated_patient["age"] == 30
+    assert updated_patient["doctor"] == "Dr. Test"
+    assert updated_patient["active"] is True
+
+def test_update_patient_doctor(repository):
+    patient = {
+        "name": "Test Patient",
+        "age": 30,
+        "doctor": "Dr. Test",
+        "active": True
+    }
+
+    repository.add_patient(patient)
+
+    patient["doctor"] = "Dr. New"
+    repository.update_patient(patient)
+
+    patients = repository.get_patients("all")
+    updated_patient = patients[0]
+
+    assert updated_patient["id"] == patient["id"]
+    assert updated_patient["name"] == "Test Patient"
+    assert updated_patient["age"] == 30
+    assert updated_patient["doctor"] == "Dr. New"
+    assert updated_patient["active"] is True
+
+def test_update_multiple_patient_fields(repository):
+    patient = {
+        "name": "Test Patient",
+        "age": 30,
+        "doctor": "Dr. Test",
+        "active": True
+    }
+
+    repository.add_patient(patient)
+
+    patient["name"] = "Updated Patient"
+    patient["age"] = 40
+    patient["doctor"] = "Dr. New"
+
+    repository.update_patient(patient)
+
+    patients = repository.get_patients("all")
+    updated_patient = patients[0]
+
+    assert updated_patient["id"] == patient["id"]
+    assert updated_patient["name"] == "Updated Patient"
+    assert updated_patient["age"] == 40
+    assert updated_patient["doctor"] == "Dr. New"
+    assert updated_patient["active"] is True
+
+def test_patient_registration_creates_activity(repository):
+    patient = {
+        "name": "Test Patient",
+        "age": 30,
+        "doctor": "Dr. Test",
+        "active": True
+    }
+
+    repository.add_patient(patient)
+
+    activity = repository.get_patient_activity(patient["id"])
+
+    assert len(activity) == 1
+    assert activity[0]["action"] == "Patient registered"
+
+
+def test_patient_name_update_creates_activity(repository):
+    patient = {
+        "name": "Test Patient",
+        "age": 30,
+        "doctor": "Dr. Test",
+        "active": True
+    }
+
+    repository.add_patient(patient)
+
+    patient["name"] = "Updated Patient"
+    repository.update_patient(patient)
+
+    activity = repository.get_patient_activity(patient["id"])
+
+    assert len(activity) == 2
+    assert activity[1]["action"] == "Name changed"
+    assert activity[1]["old_value"] == "Test Patient"
+    assert activity[1]["new_value"] == "Updated Patient"
