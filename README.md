@@ -13,6 +13,7 @@ Nimbus Health transitions standard clinical workflow management into software au
 - **Patient Registration:** Seamlessly register new patients with automatically generated unique patient IDs.
 - **Granular Profile Updates:** Modify patient names, ages, assigned doctors, and record status dynamically.
 - **Lifecycle Management:** Activate, deactivate, and view active records instantly without compromising historical tracking.
+- **Patient Activity History:** Automatically records patient registration and successful profile changes with timestamps and old/new values for auditability.
 - **Data Integrity Guardrails:** Strict, real-time input validation ensuring invalid datatypes or blank entries cannot corrupt system fields.
   - Validated fields: Patient Names, Ages, Doctor Names, and Unique IDs.
 - **SQLite Persistence:** Patient records are stored locally in a SQLite database rather than a JSON file.
@@ -34,15 +35,15 @@ Nimbus Health transitions standard clinical workflow management into software au
 
 ## 📋 Project Directory Structure
 
-    nimbus-health/
-    │
-    ├── main.py                 # Main application controller and interactive user menu
-    ├── patients.py             # Core business logic and patient management functions
-    ├── storage.py              # SQLite database persistence layer
-    ├── tests/
-    │   └── test_patients.py    # Automated patient management and persistence tests
-    ├── README.md               # Project documentation
-    └── NOTES.md                # Developer notes and command cheat sheet
+nimbus-health/
+│
+├── main.py # Main application controller and interactive user menu
+├── patients.py # Core business logic and patient management functions
+├── storage.py # SQLite database persistence layer
+├── tests/
+│ └── test_patients.py # Automated patient management and persistence tests
+├── README.md # Project documentation
+└── NOTES.md # Developer notes and command cheat sheet
 
 Local SQLite database files are excluded from version control through `.gitignore`.
 
@@ -52,14 +53,17 @@ Local SQLite database files are excluded from version control through `.gitignor
 
 To run the application locally, clone the repository and execute the main controller file:
 
-    # Clone the repository
-    git clone https://github.com/OfBloodandrank/nimbus-health.git
+# Clone the repository
 
-    # Navigate into the project directory
-    cd nimbus-health
+git clone https://github.com/OfBloodandrank/nimbus-health.git
 
-    # Execute the application
-    python3 main.py
+# Navigate into the project directory
+
+cd nimbus-health
+
+# Execute the application
+
+python3 main.py
 
 ### Running Tests
 
@@ -67,9 +71,9 @@ Nimbus Health uses `pytest` for automated testing.
 
 Run the full test suite with:
 
-    python3 -m pytest
+python3 -m pytest
 
-The current test suite covers patient validation, SQLite data loading, database-to-Python data conversion, and new patient persistence.
+The current test suite covers patient validation, SQLite persistence, patient status changes, patient record updates, and patient activity history.
 
 ---
 
@@ -96,6 +100,7 @@ Nimbus Health is undergoing an active engineering transformation from a local Py
 ### Completed
 
 **Core Application Functionality**
+
 - Patient management workflows
 - Patient registration
 - Patient record updates
@@ -105,6 +110,7 @@ Nimbus Health is undergoing an active engineering transformation from a local Py
 - Modular Python architecture
 
 **Data Persistence**
+
 - SQLite-based patient data loading
 - SQLite data persistence
 - Automated patient ID generation
@@ -113,12 +119,15 @@ Nimbus Health is undergoing an active engineering transformation from a local Py
 - Local database files excluded from version control
 
 **Testing & Quality**
+
 - Automated testing with pytest
 - Expanded automated test coverage
 - SQLite persistence tests
+- Patient activity history testing
 - End-to-end application smoke testing
 
 **Development Workflow**
+
 - Git/GitHub workflow
 - Feature development and version control
 - Documentation for core functions
@@ -126,9 +135,9 @@ Nimbus Health is undergoing an active engineering transformation from a local Py
 
 ### Current Focus
 
-**Phase 3 — Cloud Persistence**
+**Patient Activity History**
 
-The next stage of Nimbus Health development is migrating the local SQLite persistence layer to **AWS DynamoDB**, introducing cloud-based data storage and preparing the application for future containerized and infrastructure-as-code deployment.
+Nimbus Health is currently expanding its patient persistence layer with activity history and audit-tracking capabilities before beginning the planned migration to AWS DynamoDB.
 
 ---
 
