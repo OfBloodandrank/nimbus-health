@@ -75,26 +75,6 @@ class PatientRepository:
         connection.close()
         return generated_id
 
-    def get_patient_by_id(self, patient_id):
-        """Pulls just ONE specific patient folder out of the filing cabinet using their ID."""
-        connection = get_connection(self.db_path)
-        cursor = connection.cursor()
-        
-        cursor.execute("SELECT * FROM patients WHERE id = ?", (patient_id,))
-        row = cursor.fetchone()
-        connection.close()
-        
-        # If we found the patient, turn their row data into a clean Python dictionary
-        if row:
-            return {
-                "id": row,
-                "name": row,
-                "age": row,
-                "doctor": row,
-                "active": bool(row)
-            }
-        return None
-
     def update_patient(self, patient):
         """Updates a patient's info and logs any field changes into the history log."""
         connection = get_connection(self.db_path)
@@ -161,8 +141,8 @@ class PatientRepository:
         connection.close()
         return updated
 
-        def get_patient_by_id(self, patient_id):
-         """Pulls just ONE specific patient folder out of the filing cabinet using their ID."""
+    def get_patient_by_id(self, patient_id):
+        """Pulls just ONE specific patient folder out of the filing cabinet using their ID."""
         connection = get_connection(self.db_path)
         cursor = connection.cursor()
         
@@ -236,3 +216,29 @@ class PatientRepository:
                 "new_value": row[5]
             })
         return activity
+
+    def get_patient_counts(self):
+        """Calculates the dashboard metrics (total, active, inactive numbers)."""
+        connection = get_connection(self.db_path)
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            SELECT
+                COUNT(*),
+                SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END),
+                SUM(CASE WHEN active = 0 THEN 1 ELSE 0 END)
+            FROM patients
+        """)
+        counts = cursor.fetchone()
+        connection.close()
+        
+        # Safe-fallbacks to ensure an empty database shows 0 instead of crashing
+        total = counts[0] if counts and counts[0] is not None else 0
+        active = counts[1] if counts and counts[1] is not None else 0
+        inactive = counts[2] if counts and counts[2] is not None else 0
+        
+        return {
+            "total": total,
+            "active": active,
+            "inactive": inactive
+        }
