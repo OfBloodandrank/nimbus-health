@@ -53,17 +53,16 @@ Local SQLite database files are excluded from version control through `.gitignor
 
 To run the application locally, clone the repository and execute the main controller file:
 
+```bash
 # Clone the repository
-
 git clone https://github.com/OfBloodandrank/nimbus-health.git
 
 # Navigate into the project directory
-
 cd nimbus-health
 
 # Execute the application
-
 python3 main.py
+```
 
 ### Running Tests
 
@@ -71,7 +70,9 @@ Nimbus Health uses `pytest` for automated testing.
 
 Run the full test suite with:
 
+```bash
 python3 -m pytest
+```
 
 The current test suite covers patient validation, SQLite persistence, patient status changes, patient record updates, and patient activity history.
 
@@ -82,13 +83,9 @@ The current test suite covers patient validation, SQLite persistence, patient st
 Nimbus Health is undergoing an active engineering transformation from a local Python application into a resilient, distributed enterprise cloud platform.
 
 - [x] **Phase 1:** Modularize application logic, build comprehensive terminal input validation, and implement custom object search routines.
-
 - [x] **Phase 2:** Implement local SQLite data persistence, migrate patient storage from JSON, expand automated test coverage, and document core functionality.
-
 - [ ] **Phase 3 (Current):** Migrate the data persistence layer to a fully managed NoSQL cloud database using **AWS DynamoDB** via the Python `boto3` SDK.
-
 - [ ] **Phase 4:** Containerize the application engine using **Docker** for standardized, isolated cloud deployment.
-
 - [ ] **Phase 5:** Orchestrate infrastructure architecture deployment using **Terraform** combined with automated deployment pipelines via **GitHub Actions**.
 
 ---
@@ -133,11 +130,15 @@ Nimbus Health is undergoing an active engineering transformation from a local Py
 - Documentation for core functions
 - Database migration committed and pushed to GitHub
 
-### Current Focus
-
 **Patient Activity History**
 
-Nimbus Health is currently expanding its patient persistence layer with activity history and audit-tracking capabilities before beginning the planned migration to AWS DynamoDB.
+- Expanded the local persistence layer with automated multi-field history tracking capabilities, logging clear timestamps alongside old and new values to create a full compliance audit trail.
+
+### Current Focus
+
+**AWS Cloud Migration**
+
+- Migrating our core patient database and history trail operations over to a fully managed NoSQL cloud database setup using **AWS DynamoDB** via the Python `boto3` SDK.
 
 ---
 
