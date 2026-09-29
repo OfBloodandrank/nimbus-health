@@ -5,3 +5,4 @@ Notes2.md
 dailysched
 *.db
 .DS_Storevenv/
+.DS_Store
