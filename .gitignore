@@ -1,8 +1,2 @@
-NOTES.md
-dailysched.md
-Notes.md
-Notes2.md
-dailysched
-*.db
-.DS_Storevenv/
+venv/
 .DS_Store
