@@ -1,25 +1,43 @@
+import time
+
 import boto3
 from botocore.exceptions import ClientError
 
+
 class PatientRepository:
     """The data desk that handles all reading and writing to our AWS cloud table."""
-    
+
+    @staticmethod
+    def format_patient_id(patient_id):
+        """Keep the DynamoDB patient key format consistent everywhere."""
+        if patient_id is None:
+            return None
+
+        if isinstance(patient_id, str):
+            if patient_id.startswith("PATIENT#"):
+                return patient_id
+            if patient_id.isdigit():
+                return f"PATIENT#{int(patient_id):05d}"
+            return patient_id
+
+        if isinstance(patient_id, int):
+            return f"PATIENT#{patient_id:05d}"
+
+        return str(patient_id)
+
     def __init__(self, table_name="NimbusHealthRecords"):
         # Initialize connection to the live or mocked AWS DynamoDB infrastructure service
         self.dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
         self.table = self.dynamodb.Table(table_name)
-    
-    def add_patient(self, patient): 
+
+    def add_patient(self, patient):
         """Saves a new patient profile and logs an initial registration note into the cloud single-table layout."""
-        # 🔢 1. Scan your cloud table items to count how many patient profiles already exist
         counts = self.get_patient_counts()
         next_id = counts["total"] + 1
-        
-        # 🛡️ Lock the calculated sequential ID number back into the main patient object dictionary
+
         patient['id'] = next_id
-        formatted_id = f"PATIENT#{next_id}"
-        
-        # 2. Package and transmit the main Patient Profile Item to AWS
+        formatted_id = self.format_patient_id(next_id)
+
         profile_item = {
             "patient_id": formatted_id,
             "record_type": "PROFILE",
@@ -30,33 +48,33 @@ class PatientRepository:
         }
         self.table.put_item(Item=profile_item)
 
-        # 3. Package and log the companion Registration Activity log item in the exact same cloud partition space!
         registration_log = {
             "patient_id": formatted_id,
             "record_type": "LOG#REGISTRATION",
             "action": "Patient registered",
             "old_value": "None",
-            "new_value": f"Registered under doctor {patient['doctor']}"
+            "new_value": f"Registered under doctor {patient['doctor']}",
+            "timestamp": int(time.time() * 1000)
         }
         self.table.put_item(Item=registration_log)
         return next_id
 
-
     def get_patient_by_id(self, patient_id):
         """Pulls one specific patient profile directly out of our NoSQL cloud partition room."""
         try:
+            formatted_id = self.format_patient_id(patient_id)
             response = self.table.get_item(
                 Key={
-                    'patient_id': f"PATIENT#{patient_id}",
+                    'patient_id': formatted_id,
                     'record_type': 'PROFILE'
                 }
             )
             item = response.get('Item')
-            
-            # Translate NoSQL internal layout back into our core application dictionary shape
+
             if item:
+                numeric_id = item.get("patient_id", "").split("#")[-1]
                 return {
-                    "id": patient_id,
+                    "id": int(numeric_id),
                     "name": item.get("name"),
                     "age": int(item.get("age")),
                     "doctor": item.get("doctor"),
@@ -68,30 +86,32 @@ class PatientRepository:
 
     def update_patient(self, patient):
         """Updates a patient's info and logs field modifications as history trace items in the cloud."""
-        formatted_id = f"PATIENT#{patient['id']}"
-        
-        # Fetch their current cloud record first to check what changed
+        if "id" not in patient:
+            return False
+
+        formatted_id = self.format_patient_id(patient['id'])
         old_record = self.get_patient_by_id(patient['id'])
         if not old_record:
             return False
 
-        # --- AUDIT TRAIL LOGGING GENERATION ---
         if old_record["name"] != patient["name"]:
             self.table.put_item(Item={
                 "patient_id": formatted_id,
                 "record_type": "LOG#NAME_CHANGED",
                 "action": "Name changed",
                 "old_value": old_record["name"],
-                "new_value": patient["name"]
+                "new_value": patient["name"],
+                "timestamp": int(time.time() * 1000)
             })
-            
+
         if old_record["age"] != patient["age"]:
             self.table.put_item(Item={
                 "patient_id": formatted_id,
                 "record_type": "LOG#AGE_CHANGED",
                 "action": "Age changed",
                 "old_value": str(old_record["age"]),
-                "new_value": str(patient["age"])
+                "new_value": str(patient["age"]),
+                "timestamp": int(time.time() * 1000)
             })
 
         if old_record["doctor"] != patient["doctor"]:
@@ -100,7 +120,8 @@ class PatientRepository:
                 "record_type": "LOG#DOCTOR_CHANGED",
                 "action": "Assigned doctor changed",
                 "old_value": old_record["doctor"],
-                "new_value": patient["doctor"]
+                "new_value": patient["doctor"],
+                "timestamp": int(time.time() * 1000)
             })
 
         if old_record["active"] != patient["active"]:
@@ -109,10 +130,10 @@ class PatientRepository:
                 "record_type": "LOG#STATUS_CHANGED",
                 "action": "Status changed",
                 "old_value": "Active" if old_record["active"] else "Inactive",
-                "new_value": "Active" if patient["active"] else "Inactive"
+                "new_value": "Active" if patient["active"] else "Inactive",
+                "timestamp": int(time.time() * 1000)
             })
 
-        # --- SAVE THE NEW CHANGES ---
         profile_item = {
             "patient_id": formatted_id,
             "record_type": "PROFILE",
@@ -128,15 +149,13 @@ class PatientRepository:
         """Pulls a collection list of patient folders filtering and sorting them by their active toggle state and ID."""
         response = self.table.scan()
         items = response.get('Items', [])
-        
+
         patients_list = []
         for item in items:
             if item.get("record_type") == "PROFILE":
                 is_active = bool(item.get("active"))
-                
-                # Safely extract integer value out of the composite key string split handles
-                raw_id = item.get("patient_id").split("#")[1]
-                
+                raw_id = item.get("patient_id", "").split("#")[-1]
+
                 patient_data = {
                     "id": int(raw_id),
                     "name": item.get("name"),
@@ -144,45 +163,43 @@ class PatientRepository:
                     "doctor": item.get("doctor"),
                     "active": is_active
                 }
-                
+
                 if status == "all":
                     patients_list.append(patient_data)
                 elif status == "active" and is_active:
                     patients_list.append(patient_data)
                 elif status == "inactive" and not is_active:
                     patients_list.append(patient_data)
-                    
-        # 🧼 THE GOLD-STAR SORTING FIX: 
-        # Sorts the items numerically by their integer ID values before sending them to the screen!
-        return sorted(patients_list, key=lambda x: x["id"])
 
+        return sorted(patients_list, key=lambda x: x["id"])
 
     def get_patient_activity(self, patient_id):
         """Pulls the entire chronological history timeline logs for a patient in a single fetch."""
         response = self.table.scan()
         items = response.get('Items', [])
-        
+
         activity_logs = []
-        formatted_id = f"PATIENT#{patient_id}"
-        
+        formatted_id = self.format_patient_id(patient_id)
+
         for item in items:
             if item.get("patient_id") == formatted_id and item.get("record_type").startswith("LOG#"):
                 activity_logs.append({
                     "action": item.get("action"),
                     "old_value": item.get("old_value"),
-                    "new_value": item.get("new_value")
+                    "new_value": item.get("new_value"),
+                    "timestamp": item.get("timestamp", 0)
                 })
-        return activity_logs
+        return sorted(activity_logs, key=lambda log: log.get("timestamp", 0))
 
     def get_patient_counts(self):
         """Calculates our dashboard summary metrics totals directly from our cloud table items."""
         response = self.table.scan()
         items = response.get('Items', [])
-        
+
         total = 0
         active = 0
         inactive = 0
-        
+
         for item in items:
             if item.get("record_type") == "PROFILE":
                 total += 1
@@ -190,5 +207,5 @@ class PatientRepository:
                     active += 1
                 else:
                     inactive += 1
-                    
+
         return {"total": total, "active": active, "inactive": inactive}

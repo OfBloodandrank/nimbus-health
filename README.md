@@ -1,164 +1,210 @@
 # Nimbus Health 🏥
 
-A Python-based patient management system that allows users to manage patient records through a command-line interface.
+A Python-based healthcare data management project focused on patient records, validation, auditing, and cloud-ready architecture.
+
+## Overview
+
+Nimbus Health models how healthcare applications can manage sensitive patient information while preserving data integrity, traceability, and operational reliability. The project combines a modular Python workflow with a cloud-native DynamoDB persistence layer built using `boto3`.
+
+It supports:
+
+- patient registration and lifecycle management
+- validation of critical patient fields
+- profile updates and record status changes
+- compliance-focused activity tracking
+- migration toward managed cloud infrastructure
 
 ---
 
-## 🚀 Architectural Overview
+## Skills Demonstrated
 
-Nimbus Health transitions standard clinical workflow management into software automation. The project explores foundational software practices used in healthcare technology systems, including secure data handling, strict validation workflows, modular programming architecture, and database persistence.
-
-### Core Capabilities & Features
-
-- **Patient Registration:** Seamlessly register new patients with automatically generated unique patient IDs.
-- **Granular Profile Updates:** Modify patient names, ages, assigned doctors, and record status dynamically.
-- **Lifecycle Management:** Activate, deactivate, and view active records instantly without compromising historical tracking.
-- **Patient Activity History:** Automatically records patient registration and successful profile changes with timestamps and old/new values for auditability.
-- **Data Integrity Guardrails:** Strict, real-time input validation ensuring invalid datatypes or blank entries cannot corrupt system fields.
-  - Validated fields: Patient Names, Ages, Doctor Names, and Unique IDs.
-- **SQLite Persistence:** Patient records are stored locally in a SQLite database rather than a JSON file.
-- **Automated Patient IDs:** SQLite generates unique patient IDs for newly registered records.
-- **Automated Testing:** Patient management and database persistence workflows are covered by pytest.
+- Python application design and modular architecture
+- Healthcare data modeling and patient record handling
+- Validation and data integrity logic
+- Audit trail and compliance-oriented record tracking
+- AWS DynamoDB design and single-table modeling
+- `boto3` integration for cloud persistence
+- Automated testing with `pytest` and Moto
 
 ---
 
-## 🛠️ Technology Stack & Core Skills
+## Impact and Outcomes
 
-- **Language:** Python 3.x
-- **Development Environment:** Modular Python Architecture
-- **Database:** SQLite
-- **Version Control:** Git & GitHub Workflow Management
-- **Testing:** `pytest` automated testing framework
-- **Current Cloud Direction:** AWS DynamoDB and `boto3`
+This project shows how to design and evolve a healthcare application from a simple local workflow into a cloud-aware data architecture. It emphasizes reliability through validation, traceability through activity history, and scalability through a NoSQL single-table design.
+
+The result is a system that better reflects real-world healthcare software requirements: clean patient operations, dependable records, and a foundation for future cloud deployment and operational growth.
 
 ---
 
-## 📋 Project Directory Structure
+## Project Goals
 
+- Provide a clean patient management workflow for healthcare-style records
+- Enforce strong validation rules before data is stored
+- Preserve an activity trail for compliance and auditing
+- Move the persistence layer from local patterns toward cloud-native infrastructure
+- Keep the code modular, testable, and easy to extend
+
+---
+
+## Why This Project Matters
+
+Nimbus Health demonstrates how to build healthcare-facing software with strong data integrity, auditability, and cloud migration thinking. It focuses on the operational realities that matter in production systems: reliable validation, clean patient workflows, traceable history, and a database design that scales beyond a local setup.
+
+For recruiters and technical reviewers, this project highlights practical experience with Python, AWS services, data modeling, and disciplined engineering habits in a domain where correctness and accountability are critical.
+
+---
+
+## Architecture
+
+The application is split into clear responsibilities:
+
+- [main.py](main.py): command-line application entry point
+- [patients.py](patients.py): business logic, record validation, and patient operations
+- [storage.py](storage.py): DynamoDB repository layer for persistence and querying
+
+This keeps the business rules separate from the data layer, which makes it easier to evolve the project as it moves toward AWS deployment.
+
+---
+
+## Core Features
+
+- Patient registration with sequential numeric IDs
+- Update support for name, age, doctor, and active/inactive status
+- Audit trail generation for each meaningful patient change
+- Input validation for names, ages, doctors, and status values
+- Single-table DynamoDB design for profile and activity records
+- Automated testing with `pytest` and Moto-based AWS mocking
+
+---
+
+## Technology Stack
+
+- Python 3.x
+- AWS DynamoDB
+- `boto3`
+- `pytest`
+- `moto`
+
+---
+
+## Repository Structure
+
+```text
 nimbus-health/
-│
-├── main.py # Main application controller and interactive user menu
-├── patients.py # Core business logic and patient management functions
-├── storage.py # SQLite database persistence layer
+├── main.py                  # CLI entry point
+├── patients.py              # Business logic and validation
+├── storage.py               # DynamoDB repository layer
 ├── tests/
-│ └── test_patients.py # Automated patient management and persistence tests
-├── README.md # Project documentation
-└── NOTES.md # Developer notes and command cheat sheet
-
-Local SQLite database files are excluded from version control through `.gitignore`.
+│   ├── test_cloud_storage.py
+│   └── test_patients.py
+├── requirements.txt         # Python dependencies
+├── README.md                # Project overview and setup
+├── NOTES.md                 # Development notes
+├── create_table.py          # Table creation helper
+├── cloud_sandbox.py         # AWS connectivity smoke test
+├── generate_report.py       # Reporting utility
+└── nimbus_compliance_snapshot.txt
+```
 
 ---
 
-## ⚙️ Local Installation & Execution
-
-To run the application locally, clone the repository and execute the main controller file:
+## Local Setup
 
 ```bash
 # Clone the repository
 git clone https://github.com/OfBloodandrank/nimbus-health.git
 
-# Navigate into the project directory
+# Navigate into the project folder
 cd nimbus-health
 
-# Execute the application
-python3 main.py
+# Create a virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-### Running Tests
-
-Nimbus Health uses `pytest` for automated testing.
-
-Run the full test suite with:
+### Run tests
 
 ```bash
-python3 -m pytest
+python -m pytest -q
 ```
 
-The current test suite covers patient validation, SQLite persistence, patient status changes, patient record updates, and patient activity history.
+The local test suite uses mocked DynamoDB behavior through Moto, so it validates the cloud-style repository without requiring live AWS access.
 
 ---
 
-## 🗺️ Cloud & System Evolution Roadmap
+## DynamoDB Design
 
-Nimbus Health is undergoing an active engineering transformation from a local Python application into a resilient, distributed enterprise cloud platform.
+The repository uses a single DynamoDB table with a compound key:
 
-- [x] **Phase 1:** Modularize application logic, build comprehensive terminal input validation, and implement custom object search routines.
-- [x] **Phase 2:** Implement local SQLite data persistence, migrate patient storage from JSON, expand automated test coverage, and document core functionality.
-- [ ] **Phase 3 (Current):** Migrate the data persistence layer to a fully managed NoSQL cloud database using **AWS DynamoDB** via the Python `boto3` SDK.
-- [ ] **Phase 4:** Containerize the application engine using **Docker** for standardized, isolated cloud deployment.
-- [ ] **Phase 5:** Orchestrate infrastructure architecture deployment using **Terraform** combined with automated deployment pipelines via **GitHub Actions**.
+- `patient_id` as the hash key
+- `record_type` as the sort key
+
+This allows profile data and compliance activity to coexist in the same table while still supporting efficient lookups by patient.
+
+### Example profile item
+
+```python
+profile_item = {
+    "patient_id": "PATIENT#00001",
+    "record_type": "PROFILE",
+    "name": "Jane Doe",
+    "age": 22,
+    "doctor": "Dr. Robinavitch",
+    "active": True
+}
+```
+
+### Example activity item
+
+```python
+registration_log = {
+    "patient_id": "PATIENT#00001",
+    "record_type": "LOG#REGISTRATION",
+    "action": "Patient registered",
+    "old_value": "None",
+    "new_value": "Registered under doctor Dr. Robinavitch"
+}
+```
+
+This pattern supports a clean single-table model for both patient data and event history.
 
 ---
 
-## 📊 Current Development Status
+## Current Status
 
-🚧 **Nimbus Health is currently transitioning from local database persistence toward cloud-based data infrastructure.**
+This project is currently in the AWS migration phase. The application logic and persistence layer have already moved to a DynamoDB-oriented repository, and the test suite validates that behavior with mocked cloud infrastructure.
 
 ### Completed
 
-**Core Application Functionality**
-
-- Patient management workflows
-- Patient registration
-- Patient record updates
-- Patient search
-- Patient activation/deactivation
-- Input validation
-- Modular Python architecture
-
-**Data Persistence**
-
-- SQLite-based patient data loading
-- SQLite data persistence
-- Automated patient ID generation
-- Patient record updates and registration
-- Migration from JSON storage to SQLite
-- Local database files excluded from version control
-
-**Testing & Quality**
-
-- Automated testing with pytest
-- Expanded automated test coverage
-- SQLite persistence tests
-- Patient activity history testing
-- End-to-end application smoke testing
-
-**Development Workflow**
-
-- Git/GitHub workflow
-- Feature development and version control
-- Documentation for core functions
-- Database migration committed and pushed to GitHub
-
-**Patient Activity History**
-
-- Expanded the local persistence layer with automated multi-field history tracking capabilities, logging clear timestamps alongside old and new values to create a full compliance audit trail.
+- patient registration logic
+- validation and data integrity checks
+- patient update flows
+- activity history tracking
+- DynamoDB repository implementation
+- Moto-powered automated testing
 
 ### Current Focus
 
-**AWS Cloud Migration**
-
-- Migrating our core patient database and history trail operations over to a fully managed NoSQL cloud database setup using **AWS DynamoDB** via the Python `boto3` SDK.
+- aligning infrastructure and documentation with the live cloud model
+- validating cloud interactions and repository behavior
+- preparing for real AWS environment deployment
 
 ---
 
-## 📌 Recent Milestone
+## Roadmap
 
-**SQLite Persistence Migration — Completed**
+- [x] Build core patient management workflow
+- [x] Add validation and audit-trail patterns
+- [x] Move persistence layer to AWS DynamoDB with `boto3`
+- [ ] Provision and validate a real AWS environment
+- [ ] Deploy the app to a managed cloud runtime
+- [ ] Add CI/CD and infrastructure automation
 
-Nimbus Health successfully migrated its patient persistence layer from JSON file storage to SQLite.
+---
 
-The migration included:
+## Notes
 
-- SQLite database integration
-- Patient record loading
-- Patient record updates
-- New patient insertion
-- Database-generated patient IDs
-- Python/SQLite data conversion
-- Updated automated tests
-- Removal of obsolete JSON storage
-- Documentation updates
-- Successful end-to-end application testing
-
-All automated tests currently pass.
+This project is no longer built around SQLite as its active persistence layer. The code, tests, and documentation are aligned to the current DynamoDB-based architecture.
