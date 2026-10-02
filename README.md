@@ -50,7 +50,7 @@ The result is a system that better reflects real-world healthcare software requi
 
 Nimbus Health demonstrates how to build healthcare-facing software with strong data integrity, auditability, and cloud migration thinking. It focuses on the operational realities that matter in production systems: reliable validation, clean patient workflows, traceable history, and a database design that scales beyond a local setup.
 
-For recruiters and technical reviewers, this project highlights practical experience with Python, AWS services, data modeling, and disciplined engineering habits in a domain where correctness and accountability are critical.
+For recruiters and technical reviewers, this project reflects hands-on learning in Python, AWS service integration, data modeling, and disciplined engineering practices in a domain where correctness and accountability are critical.
 
 ---
 
